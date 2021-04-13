@@ -15,25 +15,25 @@
 
 #[macro_use]
 extern crate bitflags;
-extern crate pmem_sys;
 extern crate libc;
+extern crate pmem_sys;
 
 // Modules
 
-pub mod pmap;
-pub mod ptr;
 pub mod cell;
 pub mod nodrain;
+pub mod pmap;
+pub mod ptr;
 
 // lib module
 
-use ::std::mem;
-use ::std::io;
-use ::std::ffi::CStr;
+use std::ffi::CStr;
+use std::io;
+use std::mem;
 
-use ::libc::{c_void, c_uint};
-use ::libc::size_t;
-use ::pmem_sys as ffi;
+use libc::size_t;
+use libc::{c_uint, c_void};
+use pmem_sys as ffi;
 
 /// Description of the last error
 ///
@@ -150,7 +150,7 @@ pub fn msync_unsized<T: ?Sized>(x: &T) -> Result<(), io::Error> {
 /// > Note that either of these steps may be unnecessary on a given platform, and
 /// > the library knows how to check for that and do the right thing.
 /// > For example, on Intel platforms, pmem_drain() is an empty function.
-pub fn flush<T>(x: &T) {
+pub fn flush<T: ?Sized>(x: &T) {
     let len = mem::size_of_val(x);
     unsafe { ffi::pmem_flush(x as *const _ as *const c_void, len as size_t) };
 }
